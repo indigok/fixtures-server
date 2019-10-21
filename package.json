@@ -45,7 +45,7 @@
     "console-log-level": "^1.4.0",
     "cors": "^2.8.4",
     "express": "^4.16.3",
-    "glob": "^7.1.2",
+    "glob": "^7.1.5",
     "http-proxy-middleware": "^0.20.0",
     "lodash": "^4.17.10",
     "yargs": "^14.0.0"
