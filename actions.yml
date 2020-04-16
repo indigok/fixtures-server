@@ -1,0 +1,5 @@
+name: 'Octokit fixture server'
+description: 'Serve octokit fixtures server'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
