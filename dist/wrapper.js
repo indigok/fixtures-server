@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 
-const fixturesServer = require("index.js");
+const fixturesServer = require("./index.js");
 app.use(
   fixturesServer()
 );
