@@ -1,6 +1,9 @@
 {
   "name": "@octokit/fixtures-server",
   "version": "0.0.0-development",
+  "scripts": {
+    "build": "ncc build index.js -o dist"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -55,6 +58,7 @@
     "semantic-release": "^17.0.0",
     "supertest": "^4.0.0",
     "tap": "^14.0.0"
+    "@zeit/ncc": "^0.20.5",
   },
   "release": {
     "plugins": [
