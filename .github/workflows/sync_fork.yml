@@ -24,15 +24,7 @@ jobs:
           git config user.email "github-action@users.noreply.github.com"
           git config user.name "GitHub Actions"
           
-          git checkout -b weekly-sync-branch
+          git checkout -b master
           git merge upstream/main --no-commit
           git reset -- ./.github
-          
-          git push --set-upstream origin weekly-sync-branch
-
-      - name: Create Pull Request
-        run: |
-          gh repo set-default indigok/fixtures-server
-          gh pr create -B main -H weekly-sync-branch --title 'Sync Fork with Upstream' --body 'Weekly Cron. Created by GitHub Actions.'
-        env:
-            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git push
