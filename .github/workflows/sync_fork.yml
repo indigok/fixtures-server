@@ -26,9 +26,7 @@ jobs:
           
           git checkout -b weekly-sync-branch
           git merge upstream/main
-          
-          git reset -- ./.github
-          git commit -a -m "Reset workflows directory"
+          git checkout -- ./.github
           
           git push --set-upstream origin weekly-sync-branch
 
