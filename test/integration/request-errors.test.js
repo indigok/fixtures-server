@@ -1,18 +1,19 @@
-const { URL } = require("url");
+import express from "express";
+import supertest from "supertest";
+import { suite } from "uvu";
+import * as assert from "uvu/assert";
 
-const express = require("express");
-const supertest = require("supertest");
-const { test } = require("tap");
+import middleware from "../../index.js";
 
-const middleware = require("../..");
+const test = suite("request errors");
 
-test("request error: no matching fixture found", async (t) => {
+test("request error: no matching fixture found", async () => {
   const app = express();
   app.use(
     middleware({
       logLevel: "silent",
       ttl: 1000,
-    })
+    }),
   );
 
   const agent = supertest(app);
@@ -24,7 +25,7 @@ test("request error: no matching fixture found", async (t) => {
     .put(
       `${
         new URL(url).pathname
-      }/repos/octokit-fixture-org/create-file/contents/test.txt`
+      }/repos/octokit-fixture-org/create-file/contents/test.txt`,
     )
     .set({
       accept: "application/vnd.github.v3+json",
@@ -36,8 +37,8 @@ test("request error: no matching fixture found", async (t) => {
     })
     .catch((error) => error.response);
 
-  t.is(status, 404);
-  t.is(body.error, "Nock: No match for request");
-
-  t.end();
+  assert.equal(status, 404);
+  assert.equal(body.error, "Nock: No match for request");
 });
+
+test.run();

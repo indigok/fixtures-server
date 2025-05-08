@@ -1,21 +1,19 @@
-module.exports = fixtureServereMiddleware;
+export default fixtureServerMiddleware;
 
-const { URL } = require("url");
+import _ from "lodash";
+import bodyParser from "body-parser";
+import cachimo from "cachimo";
+import { Router } from "express";
+import fixtures from "@octokit/fixtures";
+import Log from "console-log-level";
 
-const _ = require("lodash");
-const bodyParser = require("body-parser");
-const cachimo = require("cachimo");
-const express = require("express");
-const fixtures = require("@octokit/fixtures");
-const Log = require("console-log-level");
+import additions from "./lib/additions.js";
+import proxy from "./lib/proxy.js";
 
-const additions = require("./lib/additions");
-const proxy = require("./lib/proxy");
+import DEFAULTS from "./lib/defaults.js";
 
-const DEFAULTS = require("./lib/defaults");
-
-function fixtureServereMiddleware(options) {
-  const middleware = express.Router();
+function fixtureServerMiddleware(options) {
+  const middleware = Router();
 
   const state = _.defaults(_.clone(options), DEFAULTS);
 
@@ -39,14 +37,14 @@ function fixtureServereMiddleware(options) {
     }
 
     const mock = fixtures.mock(requestedFixture, (fixture) =>
-      additions(state, { id, fixture })
+      additions(state, { id, fixture }),
     );
 
     cachimo
       .put(id, mock, state.ttl)
       .then(() => {
         state.log.debug(
-          `Deleted fixtures "${id}" (${mock.pending().length} pending)`
+          `Deleted fixtures "${id}" (${mock.pending().length} pending)`,
         );
       })
       // throws error if key was deleted before timeout, safe to ignore
