@@ -1,0 +1,38 @@
+name: Sync Fork with Upstream
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Runs at midnight UTC every Monday
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Forked Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Fetch Upstream Remote
+        run: |
+          git remote add upstream https://github.com/octokit/fixtures-server.git
+          git fetch upstream
+
+      - name: Create and Push Branch 
+        run: |
+          git config user.email "github-action@users.noreply.github.com"
+          git config user.name "GitHub Actions"
+          
+          git checkout -b weekly-sync-branch
+          git merge upstream/main
+          git reset -- /home/runner/work/indigok/fixtures-server/.github
+          
+          git push --set-upstream origin weekly-sync-branch
+
+      - name: Create Pull Request
+        run: |
+          gh repo set-default indigok/fixtures-server
+          gh pr create -B main -H weekly-sync-branch --title 'Sync Fork with Upstream' --body 'Weekly Cron. Created by GitHub Actions.'
+        env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
