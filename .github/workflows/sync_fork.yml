@@ -26,7 +26,7 @@ jobs:
           
           git checkout -b weekly-sync-branch
           git merge upstream/main
-          git reset -- /home/runner/work/fixtures-server/fixtures-server/.github
+          git reset -- $HOME/.github
           
           git push --set-upstream origin weekly-sync-branch
 
