@@ -2,12 +2,10 @@
   "name": "@octokit/fixtures-server",
   "version": "0.0.0-development",
   "publishConfig": {
-    "access": "public",
-    "provenance": true
+    "access": "public"
   },
   "description": "Fixtures server for browser & language agnositic octokit testing",
   "main": "index.js",
-  "type": "module",
   "bin": {
     "octokit-fixtures-server": "bin/server.js"
   },
@@ -22,45 +20,43 @@
     "lint": "prettier --check '{bin,lib,scripts,test}/**/*.{js,json}' index.js README.md package.json",
     "lint:fix": "prettier --write '{bin,lib,scripts,test}/**/*.{js,json}' index.js README.md package.json",
     "pretest": "npm run -s lint",
-    "test": "npm run test:integration && npm run test:unit",
-    "test:integration": "uvu test/integration",
-    "test:unit": "uvu test/unit",
+    "test": "tap --100 --coverage 'test/**/*-test.js'",
     "test:e2e": "npm run test:e2e:smoke && npm run test:e2e:custom-fixtures",
     "test:e2e:smoke": "test/end-to-end/smoke-test.sh",
     "test:e2e:custom-fixtures": "test/end-to-end/custom-fixtures-test.sh"
   },
-  "repository": "github:octokit/fixtures-server",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/octokit/fixtures-server.git"
+  },
   "keywords": [],
   "author": "Gregor Martynus (https://twitter.com/gr2m)",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/octokit/fixtures-server/issues"
+  },
+  "homepage": "https://github.com/octokit/fixtures-server#readme",
   "dependencies": {
-    "@octokit/fixtures": "23.1.1",
-    "cachimo": "^2.0.1",
+    "@octokit/fixtures": "^21.0.0",
+    "cachimo": "^1.0.6",
     "console-log-level": "^1.4.0",
     "cors": "^2.8.4",
-    "express": "^5.0.0",
-    "glob": "^10.0.0",
-    "http-proxy-middleware": "^2.0.0",
+    "express": "^4.16.3",
+    "glob": "^7.1.2",
+    "http-proxy-middleware": "^1.0.0",
     "lodash": "^4.17.10",
-    "yargs": "^17.0.0"
+    "yargs": "^15.0.1"
   },
   "devDependencies": {
-    "caxa": "^3.0.0",
-    "prettier": "^3.0.0",
-    "semantic-release": "^24.0.0",
-    "supertest": "^7.0.0",
-    "uvu": "^0.5.1"
+    "axios": "^0.19.0",
+    "pkg": "^4.3.3",
+    "prettier": "^2.0.1",
+    "proxyquire": "^2.0.0",
+    "semantic-release": "^17.0.0",
+    "supertest": "^4.0.0",
+    "tap": "^14.0.0"
   },
   "release": {
-    "branches": [
-      "+([0-9]).x",
-      "main",
-      "next",
-      {
-        "name": "beta",
-        "prerelease": true
-      }
-    ],
     "plugins": [
       "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
@@ -76,13 +72,13 @@
       ]
     ]
   },
+  "pkg": {
+    "scripts": "node_modules/@octokit/fixtures/scenarios/**/*.json"
+  },
   "now": {
     "alias": "octokit-fixtures",
     "env": {
       "NODE_ENV": "production"
     }
-  },
-  "engines": {
-    "node": ">=18"
   }
 }

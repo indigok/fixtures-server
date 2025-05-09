@@ -1,14 +1,13 @@
-import express from "express";
-import supertest from "supertest";
-import { suite } from "uvu";
-import * as assert from "uvu/assert";
+const { URL } = require("url");
 
-import { getScenarioFixture } from "../util.js";
-import middleware from "../../index.js";
+const express = require("express");
+const supertest = require("supertest");
+const { test } = require("tap");
 
-const test = suite("redirects");
+const { getScenarioFixture } = require("../util");
+const middleware = require("../..");
 
-test("get repository redirect (gr2m/octokit-rest-browser-experimental#6)", async () => {
+test("get repository redirect (gr2m/octokit-rest-browser-experimental#6)", async (t) => {
   const app = express();
   app.use(
     middleware({
@@ -17,15 +16,16 @@ test("get repository redirect (gr2m/octokit-rest-browser-experimental#6)", async
       fixtures: {
         "rename-repository": getScenarioFixture("rename-repository"),
       },
-    }),
+    })
   );
 
   const agent = supertest(app);
   const fixtureResponse = await agent
     .post("/fixtures")
-    .send({ scenario: "rename-repository" });
+    .send({ scenario: "rename-repository" })
+    .catch(t.error);
 
-  assert.equal(fixtureResponse.status, 201);
+  t.is(fixtureResponse.status, 201, fixtureResponse.body.error);
   const path = new URL(fixtureResponse.body.url).pathname;
 
   const renameResponse = await agent
@@ -37,9 +37,14 @@ test("get repository redirect (gr2m/octokit-rest-browser-experimental#6)", async
     })
     .send({
       name: "rename-repository-newname",
-    });
+    })
+    .catch(t.error);
 
-  assert.equal(renameResponse.status, 200);
+  t.is(
+    renameResponse.status,
+    200,
+    renameResponse.body.detail || renameResponse.body.error
+  );
 
   const getResponse = await agent
     .get(`${path}/repos/octokit-fixture-org/rename-repository`)
@@ -49,14 +54,21 @@ test("get repository redirect (gr2m/octokit-rest-browser-experimental#6)", async
     })
     .catch((error) => error.response);
 
-  assert.equal(getResponse.status, 301);
-  assert.equal(
+  t.is(
+    getResponse.status,
+    301,
+    getResponse.body.detail || getResponse.body.error
+  );
+  t.is(
     getResponse.headers.location,
     `http://localhost:3000${path}/repositories/1000`,
+    "redirect URL is prefixed correctly"
   );
+
+  t.end();
 });
 
-test("get repository success (redirect with custom URL test)", async () => {
+test("get repository success (redirect with custom URL test)", async (t) => {
   const app = express();
   app.use(
     middleware({
@@ -66,15 +78,16 @@ test("get repository success (redirect with custom URL test)", async () => {
         "rename-repository": getScenarioFixture("rename-repository"),
       },
       fixturesUrl: "https://deployment123.my-mock-server.com",
-    }),
+    })
   );
 
   const agent = supertest(app);
   const fixtureResponse = await agent
     .post("/fixtures")
-    .send({ scenario: "rename-repository" });
+    .send({ scenario: "rename-repository" })
+    .catch(t.error);
 
-  assert.equal(fixtureResponse.status, 201);
+  t.is(fixtureResponse.status, 201, fixtureResponse.body.error);
   const path = new URL(fixtureResponse.body.url).pathname;
 
   const renameResponse = await agent
@@ -86,9 +99,14 @@ test("get repository success (redirect with custom URL test)", async () => {
     })
     .send({
       name: "rename-repository-newname",
-    });
+    })
+    .catch(t.error);
 
-  assert.equal(renameResponse.status, 200);
+  t.is(
+    renameResponse.status,
+    200,
+    renameResponse.body.detail || renameResponse.body.error
+  );
 
   const getResponse = await agent
     .get(`${path}/repos/octokit-fixture-org/rename-repository`)
@@ -98,11 +116,16 @@ test("get repository success (redirect with custom URL test)", async () => {
     })
     .catch((error) => error.response);
 
-  assert.equal(getResponse.status, 301);
-  assert.equal(
+  t.is(
+    getResponse.status,
+    301,
+    getResponse.body.detail || getResponse.body.error
+  );
+  t.is(
     getResponse.headers.location,
     `https://deployment123.my-mock-server.com${path}/repositories/1000`,
+    "redirect URL is prefixed correctly"
   );
-});
 
-test.run();
+  t.end();
+});

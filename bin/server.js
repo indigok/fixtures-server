@@ -1,20 +1,19 @@
 #!/usr/bin/env node
 
-import cors from "cors";
-import express from "express";
-import yargs from "yargs";
-import { hideBin } from "yargs/helpers";
+const cors = require("cors");
+const express = require("express");
+const yargs = require("yargs");
 
-import fixtureServerMiddleware from "../index.js";
-import globToFixtures from "../lib/glob-to-fixtures.js ";
+const fixtureServereMiddleware = require("..");
+const globTofixtures = require("../lib/glob-to-fixtures");
 
-import DEFAULTS from "../lib/defaults.js";
+const DEFAULTS = require("../lib/defaults");
 
 // NOW_URL: support deployment to now.sh: https://zeit.co/docs/features/env-and-secrets
 const defaultFixtureUrl =
   process.env.NOW_URL || process.env.FIXTURES_URL || DEFAULTS.fixturesUrl;
 
-const { argv } = yargs(hideBin(process.argv))
+const { argv } = yargs
   .options({
     port: {
       type: "number",
@@ -48,13 +47,13 @@ app.get("/ping", (request, response) => {
   response.json({ ok: true });
 });
 app.use(
-  fixtureServerMiddleware({
+  fixtureServereMiddleware({
     port: argv.port,
     fixturesUrl: argv["fixtures-url"],
     logLevel: argv["log-level"],
     ttl: argv.ttl,
-    fixtures: globToFixtures(argv.fixtures),
-  }),
+    fixtures: globTofixtures(argv.fixtures),
+  })
 );
 
 app.listen(argv.port);

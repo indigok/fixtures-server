@@ -1,14 +1,11 @@
-import express from "express";
-import supertest from "supertest";
-import { suite } from "uvu";
-import * as assert from "uvu/assert";
+const express = require("express");
+const supertest = require("supertest");
+const { test } = require("tap");
 
-import { getScenarioFixture } from "../util.js";
-import middleware from "../../index.js";
+const { getScenarioFixture } = require("../util");
+const middleware = require("../..");
 
-const test = suite("fixtures conflicts");
-
-test("conflicts test (#8)", async () => {
+test("conflicts test (#8)", async (t) => {
   const app = express();
   app.use(
     middleware({
@@ -17,7 +14,7 @@ test("conflicts test (#8)", async () => {
       fixtures: {
         "release-assets": getScenarioFixture("release-assets"),
       },
-    }),
+    })
   );
 
   const agent = supertest(app);
@@ -31,21 +28,21 @@ test("conflicts test (#8)", async () => {
     body: { upload_url: uploadUrl },
   } = await agent
     .get(
-      `/api.github.com/${fixtureId}/repos/octokit-fixture-org/release-assets/releases/tags/v1.0.0`,
+      `/api.github.com/${fixtureId}/repos/octokit-fixture-org/release-assets/releases/tags/v1.0.0`
     )
     .set({
       accept: "application/vnd.github.v3+json",
       authorization: "token 0000000000000000000000000000000000000001",
     });
 
-  assert.equal(
+  t.is(
     uploadUrl,
-    `http://localhost:3000/uploads.github.com/${fixtureId}/repos/octokit-fixture-org/release-assets/releases/1000/assets{?name,label}`,
+    `http://localhost:3000/uploads.github.com/${fixtureId}/repos/octokit-fixture-org/release-assets/releases/1000/assets{?name,label}`
   );
 
   const result = await agent
     .post(
-      `/uploads.github.com/${fixtureId}/repos/octokit-fixture-org/release-assets/releases/1000/assets`,
+      `/uploads.github.com/${fixtureId}/repos/octokit-fixture-org/release-assets/releases/1000/assets`
     )
     .query({
       name: "test-upload.txt",
@@ -60,7 +57,7 @@ test("conflicts test (#8)", async () => {
     })
     .catch((error) => console.log(error.stack));
 
-  assert.equal(result.body.name, "test-upload.txt");
-});
+  t.is(result.body.name, "test-upload.txt");
 
-test.run();
+  t.end();
+});

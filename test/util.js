@@ -1,10 +1,7 @@
-export { getScenarioFixture };
-
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
+module.exports = {
+  getScenarioFixture,
+};
 
 function getScenarioFixture(name) {
-  return require(
-    `@octokit/fixtures/scenarios/api.github.com/${name}/normalized-fixture.json`,
-  );
+  return require(`@octokit/fixtures/scenarios/api.github.com/${name}/normalized-fixture.json`);
 }
